@@ -7,7 +7,11 @@ Usage:
     <!-- insert before the end tag of body element: -->
     <script type="text/javascript" src="neverending-streaming.js" ></script>
     <script type="text/javascript" >
-    var ans = new AjaxNeverendingStreaming('get_partial_responses.php', document.getElementById('element_where_to_draw_partial_responses'));
+    var ans = new AjaxNeverendingStreaming(
+      'get_partial_responses.php',
+      document.getElementById('element_where_to_draw_partial_responses'),
+      { /* options */ }
+    );
     </script>
     
 ```
