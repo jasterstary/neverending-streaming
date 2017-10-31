@@ -1,6 +1,6 @@
 /*!
  * AjaxNeverendingStreaming
- * Version 1.0.0-2017.10.31
+ * Version 1.0.1-2017.10.31
  * Requires javascript :)
  *
  * Examples at: https://github.com/jasterstary/neverending-streaming/tree/master/example
@@ -180,9 +180,7 @@
       } else {
         this._stopped = false;
         this._doTheStream();
-
       }
-
     },
 
     this._doTheStream = function() {
@@ -277,6 +275,10 @@
     this.resume = function() {
       instances[this.p].stop.call(instances[this.p], false);
       return this;
+    },
+    this.destroy = function() {
+      instances[this.p].stop.call(instances[this.p], true);
+      delete instances[this.p];
     }
   };
 })(window, $);
