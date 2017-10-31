@@ -3,6 +3,8 @@
 
 
 Usage:
+
+Options:
 ``` javascript
     var ans = new AjaxNeverendingStreaming('get.php', document.getElementById('grepresults1'), {
       // These are the default values:
