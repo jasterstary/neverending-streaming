@@ -3,10 +3,18 @@
 
 
 Usage:
+``` html
+    <!-- insert before the end tag of body element: -->
+    <script type="text/javascript" src="neverending-streaming.js" ></script>
+    <script type="text/javascript" >
+    var ans = new AjaxNeverendingStreaming('get_partial_responses.php', document.getElementById('element_where_to_draw_partial_responses'));
+    </script>
+    
+```
 
 Options:
 ``` javascript
-    var ans = new AjaxNeverendingStreaming('get.php', document.getElementById('grepresults1'), {
+    var ans = new AjaxNeverendingStreaming('get.php', document.getElementById('results1'), {
       // These are the default values:
       tag: 'message', // tag in php response.
       listLength: 10, // after that length, the listing lines will start to disappear - first in first out.
@@ -21,12 +29,12 @@ Options:
 
 Methods:
 ``` javascript
-ans.stop(); // stops downloading and processing
-ans.resume(); // starts downloading and processing 
-ans.options({ // configuring dynamically
-  onMessage: function(message){ // for example, changing what to do with processed message
-  
-  }
-});
+    ans.stop(); // stops downloading and processing
+    ans.resume(); // starts downloading and processing 
+    ans.options({ // configuring dynamically
+        onMessage: function(message){ // for example, changing what to do with processed message
+
+        }
+    });
 ans.destroy(); // free instance
 ```
