@@ -3,7 +3,7 @@
  * Version 1.0.0-2017.10.31
  * Requires javascript :)
  *
- * Examples at: https://github.com/jasterstary/neverending-streaming/example
+ * Examples at: https://github.com/jasterstary/neverending-streaming/tree/master/example
  * Copyright (c) 2017 JašterStarý
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
