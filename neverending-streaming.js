@@ -150,7 +150,7 @@
     this._doTheStreamWithoutJQuery = function() {
       this.nextReadPos = 0;
       var xhReq = new XMLHttpRequest();
-      xhReq.open("GET", that.url + ((that.url.indexOf("?")===-1)?'?':'&') + '_turn_=' + this._turn, true);
+      xhReq.open("GET", that.url + ((that.url.indexOf("?")===-1)?'?':'&') + '_turn_=' + this._turn + '&_t_=' + that._getTime(), true);
       xhReq.onreadystatechange = function () {
         if(xhReq.readyState === XMLHttpRequest.DONE) {
           clearInterval(that._pt);
@@ -189,49 +189,6 @@
         that._processWhatCome(xhReq.responseText);
       }, that.interval);
     },
-    /* obsolete:
-    this._doTheStreamWithJQuery = function(){
-      this.nextReadPos = 0;
-      var xhr = new window.XMLHttpRequest();
-      this._request = xhr;
-      $.ajax(this.url + ((that.url.indexOf("?")===-1)?'?':'&') + '_turn_=' + this._turn, {
-          xhr: function(){
-            return xhr;
-          },
-          xhrFields: {
-            onprogress: function(e){
-              that._processWhatCome(e.currentTarget.response);
-            }
-          },
-          complete: function(jqXHR, textStatus) {
-            //console.log('jqXHR', jqXHR);
-            that._event('longpolling-complete', {
-              turn: (that._turn - 1),
-              chunks: that._chunk,
-              time: that._getSpentTime(),
-              status: jqXHR.status
-            });
-            that._doTheStream();
-          },
-          success: function(data, textStatus, jqXHR) {
-            that._event('longpolling-success', {
-              turn: (that._turn - 1),
-              chunks: that._chunk,
-              time: that._getSpentTime(),
-              status: jqXHR.status
-            });
-          },
-          error: function(jqXHR, textStatus, errorThrown) {
-            that._event('longpolling-error', {
-              turn: (that._turn - 1),
-              chunks: that._chunk,
-              time: that._getSpentTime(),
-              status: jqXHR.status
-            });
-          }
-      });
-    },
-    */
 
     this.start = function() {
       this._turn = 0;
@@ -290,13 +247,7 @@
         url: this.url
       };
       that._onRequest(detail);
-      //if (that.useJQuery) {
-      //  that._doTheStreamWithJQuery();
-      //} else {
       that._doTheStreamWithoutJQuery();
-      //}
-
-
     },
 
     this._setup = function(options) {
@@ -314,29 +265,15 @@
             this.maxTurns = 1;
           }
         }
-        /*
-        if (typeof options.allowedListLength == 'number') {
-          this.allowedListLength = options.allowedListLength;
-        }
-        */
         if (typeof options.interval == 'number') {
           this.interval = options.interval;
         }
-        /*
-        if (typeof options.useJQuery == 'boolean') {
-          this.useJQuery = options.useJQuery;
-        }*/
         if (typeof options.useJSON == 'boolean') {
           this.useJSON = options.useJSON;
         }
         if (typeof options.stopped == 'boolean') {
           this._stopped = options.stopped;
         }
-        /*
-        if (typeof options.prepend == 'boolean') {
-          this.prepend = options.prepend;
-        }
-        */
         if (typeof options.onComplete == 'function') {
           this._onComplete = options.onComplete;
         }
