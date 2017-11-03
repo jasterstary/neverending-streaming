@@ -1,6 +1,6 @@
 /*!
  * AjaxNeverendingStreaming
- * Version 1.1.0-2017.11.02
+ * Version 1.1.1-2017.11.02
  * Requires javascript :)
  *
  * Examples at: https://github.com/jasterstary/neverending-streaming/tree/master/example
@@ -28,7 +28,7 @@
     var that = this;
     this.url = url;
 
-    this.tag = 'message';
+    this.tag = 'chunk';
     that._onRequest = function(detail) {
       that._event('longpolling-request', detail);
     };
@@ -409,6 +409,7 @@
     this.destroy = function() {
       instances[this.p].stop.call(instances[this.p], true);
       delete instances[this.p];
+      return null;
     }
   };
 })(window, $);
