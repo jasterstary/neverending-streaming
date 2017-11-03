@@ -22,7 +22,6 @@ Options:
       maxTurns: 1,
       tag: 'chunk', // tag in php response.
       interval: 1000, // interval to parse response without jquery.
-      prepend: false, // new line should be rather appended or prepended.
       useJSON: false, // server sends JSON chunks wrapped to xml tag.
       stopped: false, // if true, class is initially stopped. Could be started with method "resume".
       // Custom callbacks:
