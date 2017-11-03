@@ -9,7 +9,6 @@ Usage:
     <script type="text/javascript" >
     var ans = new AjaxNeverendingStreaming(
       'get_partial_responses.php',
-      document.getElementById('element_where_to_draw_partial_responses'),
       { /* options */ }
     );
     </script>
@@ -20,23 +19,30 @@ Options:
 ``` javascript
     var ans = new AjaxNeverendingStreaming('get.php', document.getElementById('results1'), {
       // These are the default values:
-      tag: 'message', // tag in php response.
-      listLength: 10, // after that length, the listing lines will start to disappear - first in first out.
+      maxTurns: 1,
+      tag: 'chunk', // tag in php response.
       interval: 1000, // interval to parse response without jquery.
-      useJQuery: false, // beter go without jQuery here, as jQuery causes appearing of waiting favicon.
       prepend: false, // new line should be rather appended or prepended.
       useJSON: false, // server sends JSON chunks wrapped to xml tag.
-      onMessage: 'draw', // string [draw, log, exec] or function custom function.
-      stopped: false // if true, class is initially stopped. Could be started with method "resume".
+      stopped: false, // if true, class is initially stopped. Could be started with method "resume".
+      // Custom callbacks:
+      onChunk: function(chunk, detail){}, // Default is to trigger jquery event "longpolling-chunk"
+      onRequest: function(detail){}, // Default is to trigger jquery event "longpolling-request"
+      onComplete: function(detail){}, // Default is to trigger jquery event "longpolling-complete"
+      onError: function(detail){}, // Default is to trigger jquery event "longpolling-error"
+      onAbort: function(detail){}, // Default is to trigger jquery event "longpolling-abort"
+      onSuccess: function(detail){}, // Default is to trigger jquery event "longpolling-success"
+      onAllDone: function(detail){} // Default is to trigger jquery event "longpolling-all-done"      
     });
 ```
 
 Methods:
 ``` javascript
     ans.stop(); // stops downloading and processing
-    ans.resume(); // starts downloading and processing 
+    ans.resume(); // starts downloading and processing, turns are continuing 
+    ans.start(); // starts downloading and processing, turns are reset to 0 
     ans.options({ // configuring dynamically
-        onMessage: function(message){ // for example, changing what to do with processed message
+        onChunk: function(chunk){ // for example, changing what to do with processed chunk
 
         }
     });
