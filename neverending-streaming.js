@@ -1,13 +1,12 @@
 /*!
  * AjaxNeverendingStreaming
- * Version 1.0.1-2017.10.31
+ * Version 1.1.0-2017.11.02
  * Requires javascript :)
  *
  * Examples at: https://github.com/jasterstary/neverending-streaming/tree/master/example
  * Copyright (c) 2017 JašterStarý
- * Dual licensed under the MIT and GPL licenses:
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.gnu.org/licenses/gpl.html
+ * Licensed under the MIT license:
+ * http://www.opensource.org/licenses/MIT
  *
  */
 ;(function(window, $) {
@@ -24,47 +23,81 @@
     window.CustomEvent = CustomEvent;
   };
 
-  var AjaxNeverendingStreaming = function(url, selector, options) {
+  var AjaxNeverendingStreaming = function(url, options) {
 
     var that = this;
     this.url = url;
 
-    if (this.useJQuery) {
-      this.element = $(selector);
-    } else {
-      this.element = selector;
-    }
-
     this.tag = 'message';
-    that._onMessage = that._drawThat;
+    that._onRequest = function(detail) {
+      that._event('longpolling-request', detail);
+    };
+    that._onChunk = function(chunk, detail) {
+      that._event('longpolling-chunk', detail);
+    };
+    that._onSuccess = function(detail) {
+      that._event('longpolling-success', detail);
+    };
+    that._onError = function(detail) {
+      that._event('longpolling-error', detail);
+    };
+    that._onAbort = function(detail) {
+      that._event('longpolling-abort', detail);
+    };
+    that._onComplete = function(detail) {
+      that._event('longpolling-complete', detail);
+    };
+    that._onAllDone = function(detail) {
+      that._event('longpolling-all-done', detail);
+    };
     this.allowedListLength = 10;
-    this.interval = 1000;
+    this.maxTurns = 1;
+    this.interval = 500;
     this.useJQuery = false;
     this.useJSON = false;
     this.prepend = false;
 
     this.nextReadPos = 0;
     this.listing = [];
+    this._events = [];
     this._turn = 0;
+    this._chunk = 0;
     this._lastTime = 0;
-
+    this._request_state = 0;
     this._to = false;
-    this.pollTimer = false;
+    this._pt = false;
     this._stopped = false;
+
+    this._getTime = function() {
+      //console.log('TIME?', typeof performance.now);
+      if ((typeof performance == 'object')&&(typeof performance.now == 'function')) {
+        return performance.now();
+      }
+      var d = new Date();
+      return d.getTime()
+    },
+
+    this._getSpentTime = function() {
+      return (this._getTime() - this._lastTime);
+    },
+
+    this._event = function(name, detail) {
+      // Create the event
+      var event = new window.CustomEvent(name, {
+        detail:detail,
+        bubbles: true,
+        cancelable: true
+      });
+      // Dispatch/Trigger/Fire the event
+      document.body.dispatchEvent(event);
+    },
 
     this._logThat = function(theMessage) {
       console.log(theMessage);
     },
 
     this._eventThat = function(theMessage) {
-      // Create the event
-      var event = new window.CustomEvent(options.onMessage, {
-        detail:theMessage,
-        bubbles: true,
-        cancelable: true
-      });
-      // Dispatch/Trigger/Fire the event
-      document.body.dispatchEvent(event);
+      this._event(options.onChunk, theMessage);
     },
 
     this._execThat = function(theMessage) {
@@ -78,54 +111,40 @@
       };
     },
 
-    this._drawThat = function(theMessage) {
-      if (that.useJQuery) {
-        if (that.prepend) {
-          that.listing.push($('<div>' + theMessage + '</div>').prependTo(that.element));
-        } else {
-          that.listing.push($('<div>' + theMessage + '</div>').appendTo(that.element));
-        };
-        if (that.listing.length > that.allowedListLength) {
-          var toKill = that.listing.shift();
-          $(toKill).remove();
-        };
-      } else {
-        var div = document.createElement('div');
-        div.innerHTML = theMessage;
-        that.listing.push(div);
-        var next = that.element.getElementsByTagName('div')[0];
-        if (that.prepend && next) {
-          that.element.insertBefore(div, next);
-        } else {
-          that.element.appendChild(div);
-        }
-        if (that.listing.length > that.allowedListLength) {
-          var toKill = that.listing.shift();
-          toKill.parentNode.removeChild(toKill);
-        };
-      };
-    },
-
     this._processWhatCome = function(allMessages) {
       do {
-        if (this._stopped) return;
         var unprocessed = allMessages.substring(that.nextReadPos);
         var messageXMLEndIndex = unprocessed.indexOf(that.endTag);
         if (messageXMLEndIndex!=-1) {
           var endOfFirstMessageIndex = messageXMLEndIndex;
           // pick only content of tag:
-          var theMessage = unprocessed.substring(that.startTagLength, endOfFirstMessageIndex);
+          var theChunk = unprocessed.substring(that.startTagLength, endOfFirstMessageIndex);
           endOfFirstMessageIndex = endOfFirstMessageIndex + that.endTagLength;
           // decode JSON, wrapped into message:
           if (this.useJSON) {
-            theMessage = JSON.parse(theMessage);
+            theChunk = JSON.parse(theChunk);
           }
-          // with valid message, do the custom function:
-          that._onMessage(theMessage);
+          this._chunk++;
+          var detail = {
+            turn: (this._turn),
+            chunk: (this._chunk),
+            time: this._getSpentTime(),
+            data: theChunk
+          };
+          if (that._request_state == 1) {
+            that._request_state = 2;
+          };
+          // trigger the event:
+          that._event('longpolling-chunk', detail);
+          // with valid chunk, do the custom function:
+          that._onChunk(theChunk, detail);
           // move the position after processed tag:
           that.nextReadPos += endOfFirstMessageIndex;
         }
       } while (messageXMLEndIndex != -1);
+      if (that._request_state == 3) {
+        that._request_state = 4;
+      }
     },
 
     this._doTheStreamWithoutJQuery = function() {
@@ -133,72 +152,151 @@
       var xhReq = new XMLHttpRequest();
       xhReq.open("GET", that.url + ((that.url.indexOf("?")===-1)?'?':'&') + '_turn_=' + this._turn, true);
       xhReq.onreadystatechange = function () {
-        if(xhReq.readyState === XMLHttpRequest.DONE){
-          clearInterval(that.pollTimer);
+        if(xhReq.readyState === XMLHttpRequest.DONE) {
+          clearInterval(that._pt);
+          var detail = {
+            turn: (that._turn),
+            status: xhReq.status,
+            statusText: xhReq.statusText
+          };
+          if (that._request_state == -3) {
+            // could not relly on xhReq if aborted:
+            detail.status = 0;
+            detail.statusText = 'aborted';
+          }
+          that._request_state = 3;
+          that._processWhatCome(xhReq.responseText);
+          detail.chunks = that._chunk;
+          detail.time = that._getSpentTime();
+          if (detail.status === 200) {
+            that._onSuccess(detail);
+            //that._event('longpolling-success', detail);
+          } else if (detail.status === 0) {
+            that._onAbort(detail);
+            //that._event('longpolling-success', detail);
+          } else {
+            that._onError(detail);
+            //that._event('longpolling-error', detail);
+          }
+          that._onComplete(detail);
+          //that._event('longpolling-complete', detail);
           that._doTheStream();
-        };
-        if(xhReq.readyState === XMLHttpRequest.DONE && xhReq.status === 200) {
-
-        } else {
-
         }
       };
       xhReq.send(null);
-      this._turn++;
-      that.pollTimer = setInterval(function(){
+      this._request = xhReq;
+      that._pt = setInterval(function(){
         that._processWhatCome(xhReq.responseText);
       }, that.interval);
     },
-
+    /* obsolete:
     this._doTheStreamWithJQuery = function(){
       this.nextReadPos = 0;
+      var xhr = new window.XMLHttpRequest();
+      this._request = xhr;
       $.ajax(this.url + ((that.url.indexOf("?")===-1)?'?':'&') + '_turn_=' + this._turn, {
+          xhr: function(){
+            return xhr;
+          },
           xhrFields: {
             onprogress: function(e){
               that._processWhatCome(e.currentTarget.response);
             }
+          },
+          complete: function(jqXHR, textStatus) {
+            //console.log('jqXHR', jqXHR);
+            that._event('longpolling-complete', {
+              turn: (that._turn - 1),
+              chunks: that._chunk,
+              time: that._getSpentTime(),
+              status: jqXHR.status
+            });
+            that._doTheStream();
+          },
+          success: function(data, textStatus, jqXHR) {
+            that._event('longpolling-success', {
+              turn: (that._turn - 1),
+              chunks: that._chunk,
+              time: that._getSpentTime(),
+              status: jqXHR.status
+            });
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            that._event('longpolling-error', {
+              turn: (that._turn - 1),
+              chunks: that._chunk,
+              time: that._getSpentTime(),
+              status: jqXHR.status
+            });
           }
-      })
-      .done(function(data) {
-        that._doTheStream();
-      })
-      .fail(function(data) {
-          //console.log('Error: ', data);
       });
-      this._turn++;
+    },
+    */
+
+    this.start = function() {
+      this._turn = 0;
+      this.resume();
     },
 
-    this.stop = function(b) {
-      if (b) {
-        this._stopped = true;
-        if (this.pollTimer) {
-          clearInterval(this.pollTimer);
-        }
-        if (this._to) {
-          clearTimeout(this._to);
-        }
-      } else {
-        this._stopped = false;
-        this._doTheStream();
+    this.resume = function() {
+      this._stopped = false;
+      this._doTheStream();
+    },
+
+    this._stop = function() {
+      this._stopped = true;
+      if (this._to) {
+        clearTimeout(this._to);
       }
     },
 
+    this.stop = function() {
+      this._stop();
+      if ((that._request_state != 0)&&(that._request_state != 4)) {
+        this._request_state = -3;
+        this._request.abort();
+      };
+    },
+
     this._doTheStream = function() {
+      //console.log(that._request_state);
+      if ((that._request_state != 0)&&(that._request_state != 4)) {
+        return;
+      };
       if (this._stopped) return;
-      var d = new Date();
-      if ((this._lastTime + 900) > d.getTime()) {
+      if ((this.maxTurns) && ((this._turn) >= this.maxTurns)) {
+        var detail = {
+          turns: that._turn
+        };
+        that._onAllDone(detail);
+        this._stop();
+
+        return;
+      }
+      var t = this._getTime();
+      if ((this._lastTime + 900) > t) {
         //console.log('This is not intended use of neverending stream. Please check the manual.');
         this._to = setTimeout(function(){
           that._doTheStream();
         }, 1000);
         return false;
       };
-      this._lastTime = d.getTime();
-      if (this.useJQuery) {
-        this._doTheStreamWithJQuery();
-      } else {
-        this._doTheStreamWithoutJQuery();
-      }
+      this._lastTime = this._getTime();
+      this._turn++;
+      this._chunk = 0;
+      that._request_state = 1;
+      var detail = {
+        turn: this._turn,
+        url: this.url
+      };
+      that._onRequest(detail);
+      //if (that.useJQuery) {
+      //  that._doTheStreamWithJQuery();
+      //} else {
+      that._doTheStreamWithoutJQuery();
+      //}
+
+
     },
 
     this._setup = function(options) {
@@ -207,42 +305,70 @@
         if (typeof options.tag == 'string') {
           this.tag = options.tag;
         }
+        if (typeof options.maxTurns == 'number') {
+          this.maxTurns = options.maxTurns;
+        } else if (typeof options.maxTurns == 'boolean') {
+          if (!options.maxTurns) {
+            this.maxTurns = 0;
+          } else {
+            this.maxTurns = 1;
+          }
+        }
+        /*
         if (typeof options.allowedListLength == 'number') {
           this.allowedListLength = options.allowedListLength;
         }
+        */
         if (typeof options.interval == 'number') {
           this.interval = options.interval;
         }
+        /*
         if (typeof options.useJQuery == 'boolean') {
           this.useJQuery = options.useJQuery;
-        }
+        }*/
         if (typeof options.useJSON == 'boolean') {
           this.useJSON = options.useJSON;
         }
         if (typeof options.stopped == 'boolean') {
           this._stopped = options.stopped;
         }
+        /*
         if (typeof options.prepend == 'boolean') {
           this.prepend = options.prepend;
         }
-        if (typeof options.onMessage == 'function') {
-          this._onMessage = options.onMessage;
-        } else if (typeof options.onMessage == 'string') {
-          switch (options.onMessage) {
+        */
+        if (typeof options.onComplete == 'function') {
+          this._onComplete = options.onComplete;
+        }
+        if (typeof options.onSuccess == 'function') {
+          this._onSuccess = options.onSuccess;
+        }
+        if (typeof options.onAbort == 'function') {
+          this._onAbort = options.onAbort;
+        }
+        if (typeof options.onError == 'function') {
+          this._onError = options.onError;
+        }
+        if (typeof options.onAllDone == 'function') {
+          this._onAllDone = options.onAllDone;
+        }
+        if (typeof options.onRequest == 'function') {
+          this._onRequest = options.onRequest;
+        }
+        if (typeof options.onChunk == 'function') {
+          this._onChunk = options.onChunk;
+        } else if (typeof options.onChunk == 'string') {
+          switch (options.onChunk) {
             case 'log':
-              this._onMessage = this._logThat;
-            break;
-            case 'draw':
-              this._onMessage = this._drawThat;
+              this._onChunk = this._logThat;
             break;
             case 'exec':
-              this._onMessage = this._execThat;
+              this._onChunk = this._execThat;
             break;
             default:
-              this._onMessage = this._eventThat;
+              this._onChunk = this._eventThat;
             break;
           };
-
         }
       };
 
@@ -272,8 +398,12 @@
       instances[this.p].stop.call(instances[this.p], true);
       return this;
     },
-    this.resume = function() {
-      instances[this.p].stop.call(instances[this.p], false);
+    this.resume = function(options) {
+      instances[this.p].resume.call(instances[this.p], options);
+      return this;
+    },
+    this.start = function(options) {
+      instances[this.p].start.call(instances[this.p], options);
       return this;
     },
     this.destroy = function() {
