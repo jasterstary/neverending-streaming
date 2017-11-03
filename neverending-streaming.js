@@ -68,7 +68,6 @@
     this._stopped = false;
 
     this._getTime = function() {
-      //console.log('TIME?', typeof performance.now);
       if ((typeof performance == 'object')&&(typeof performance.now == 'function')) {
         return performance.now();
       }
@@ -119,7 +118,7 @@
           // pick only content of tag:
           var theChunk = unprocessed.substring(that.startTagLength, endOfFirstMessageIndex);
           endOfFirstMessageIndex = endOfFirstMessageIndex + that.endTagLength;
-          // decode JSON, wrapped into message:
+          // decode JSON, wrapped into chunk:
           if (this.useJSON) {
             theChunk = JSON.parse(theChunk);
           }
@@ -167,16 +166,12 @@
           detail.time = that._getSpentTime();
           if (detail.status === 200) {
             that._onSuccess(detail);
-            //that._event('longpolling-success', detail);
           } else if (detail.status === 0) {
             that._onAbort(detail);
-            //that._event('longpolling-success', detail);
           } else {
             that._onError(detail);
-            //that._event('longpolling-error', detail);
           }
           that._onComplete(detail);
-          //that._event('longpolling-complete', detail);
           that._doTheStream();
         }
       };
@@ -213,7 +208,6 @@
     },
 
     this._doTheStream = function() {
-      //console.log(that._request_state);
       if ((that._request_state != 0)&&(that._request_state != 4)) {
         return;
       };
@@ -224,7 +218,6 @@
         };
         that._onAllDone(detail);
         this._stop();
-
         return;
       }
       var t = this._getTime();
