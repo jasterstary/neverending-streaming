@@ -11,19 +11,19 @@ if (isset($_GET['_turn_'])) {
 // looong method, sometimes flushing results:
 for ($i = 1; $i <= 10; $i++) {
   $Line = $i . '/' . $turn . ' ' . date('Y-m-d H:i:s');
-  
+
   // simply flush the line:
-  echo '<message>' . $Line . '</message>';
-  
+  echo '<chunk>' . $Line . '</chunk>';
+
   // or flush the JSON object:
-  //echo '<message>' . json_encode(['line' => $Line,'turn' => $turn]) . '</message>';
-  
+  //echo '<chunk>' . json_encode(['line' => $Line,'turn' => $turn]) . '</chunk>';
+
   // or flush the function, be carefull with that exec, Eugene:
-  //echo '<script>document.title = "' . $Line . '";</script>';
-  
+  //echo '<chunk>document.title = "' . $Line . '";</chunk>';
+
   // flush must be here:
   flush();
-  
+
   // mimic the looong evaluations:
   sleep(rand(1, 3));
 };
