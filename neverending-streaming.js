@@ -133,8 +133,6 @@
           if (that._request_state == 1) {
             that._request_state = 2;
           };
-          // trigger the event:
-          that._event('longpolling-chunk', detail);
           // with valid chunk, do the custom function:
           that._onChunk(theChunk, detail);
           // move the position after processed tag:
@@ -246,13 +244,7 @@
         url: this.url
       };
       that._onRequest(detail);
-      //if (that.useJQuery) {
-      //  that._doTheStreamWithJQuery();
-      //} else {
       that._doTheStreamWithoutJQuery();
-      //}
-
-
     },
 
     this._setup = function(options) {
