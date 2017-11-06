@@ -2,7 +2,7 @@
 
 
 
-Usage:
+## Usage:
 ``` html
     <!-- insert before the end tag of body element: -->
     <script type="text/javascript" src="neverending-streaming.js" ></script>
@@ -15,7 +15,7 @@ Usage:
     
 ```
 
-Options:
+## Options:
 ``` javascript
     var ans = new AjaxNeverendingStreaming('get.php', document.getElementById('results1'), {
       // These are the default values:
@@ -36,7 +36,7 @@ Options:
     });
 ```
 
-Methods:
+## Methods:
 ``` javascript
     ans.stop(); // stops downloading and processing
     ans.resume(); // starts downloading and processing, turns are continuing 
@@ -49,37 +49,37 @@ Methods:
 ans.destroy(); // free instance
 ```
 
-Events / Custom event functions:
+## Events / Custom event functions:
 Events are described also in options section. Please note, that when custom event function is assigned, event is not called anymore.
 
-JS event "longpolling-chunk" / onChunk: 
+### JS event "longpolling-chunk" / onChunk: 
 Called each time the chunk is received. There are two variables passed to function: chunk and detail, object with some details about.
 
-JS event "longpolling-progress" / onProgress:
+### JS event "longpolling-progress" / onProgress:
 Called in interval, specified in options parameter "interval", if chunks are received or not.
 There is only one parameter passed: detail, object with details.
 
-JS event "longpolling-request" / onRequest:
+### JS event "longpolling-request" / onRequest:
 Called before the request to server is sent.
 There is only one parameter passed: detail, object with details.
 
-JS event "longpolling-complete" / onComplete:
+### JS event "longpolling-complete" / onComplete:
 Called when server completed response and all resting chunks was processed.
 There is only one parameter passed: detail, object with details.
 
-JS event "longpolling-error" / onError
+### JS event "longpolling-error" / onError
 Called when server completed response and result was error.
 There is only one parameter passed: detail, object with details.
 
-JS event "longpolling-abort" / onAbort
+### JS event "longpolling-abort" / onAbort
 Called when request was aborted by user.
 There is only one parameter passed: detail, object with details.
 
-JS event "longpolling-success" / onSuccess
+### JS event "longpolling-success" / onSuccess
 Called when server completed response and result was success: 200.
 There is only one parameter passed: detail, object with details.
 
-JS event "longpolling-all-done" / onAllDone
+### JS event "longpolling-all-done" / onAllDone
 Called when "maxTurns" requests was reached and completed.
 There is only one parameter passed: detail, object with details.
 
