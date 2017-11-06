@@ -1,6 +1,8 @@
 # neverending-streaming
 
-Javascript class, working as ajax connector to server, allowing to receive "chunks" - blocks of complete information, which could be used in the browser application, altough the server response is still not complete and request is opened. It assumes also properly prepared server side. Simple PHP example is [here](https://github.com/jasterstary/neverending-streaming/blob/master/example/get.php). Each time such chunk is received, there is called either javascript event "longpolling-chunk", or, if assigned in options, custom function "onChunk".
+Javascript class, working as ajax connector to server, allowing to receive "chunks" - blocks of complete information, which could be used in the browser application, altough the server response is still not complete and request is opened. An alternative is to use websockets, but sometimes websockets are not the option.
+
+It is assumed also properly prepared server side. Simple PHP example is [here](https://github.com/jasterstary/neverending-streaming/blob/master/example/get.php). Each time such chunk is received, there is called either javascript event "longpolling-chunk", or, if assigned in options, custom function "onChunk".
 
 ## Usage:
 ``` html
@@ -22,7 +24,7 @@ Javascript class, working as ajax connector to server, allowing to receive "chun
       maxTurns: 1, // how many times request should be repeated, after previous ended. 
       // Could be false, in such case request is repeated forever.
       tag: 'chunk', // tag in server response. See the server side example.
-      interval: 1000, // interval to parse response without jquery.
+      interval: 1000, // interval to parse server response arrived so far.
       useJSON: false, // server sends JSON chunks wrapped to xml tag.
       stopped: false, // if true, class is initially stopped. Could be started with method "start".
       // Custom callbacks:
