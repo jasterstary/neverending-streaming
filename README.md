@@ -19,11 +19,12 @@ Javascript class, working as ajax connector to server, allowing to receive "chun
 ``` javascript
     var ans = new AjaxNeverendingStreaming('get.php', {
       // These are the default values:
-      maxTurns: 1,
-      tag: 'chunk', // tag in php response.
+      maxTurns: 1, // how many times request should be repeated, after previous ended. 
+      // Could be false, in such case request is repeated forever.
+      tag: 'chunk', // tag in server response. See the server side example.
       interval: 1000, // interval to parse response without jquery.
       useJSON: false, // server sends JSON chunks wrapped to xml tag.
-      stopped: false, // if true, class is initially stopped. Could be started with method "resume".
+      stopped: false, // if true, class is initially stopped. Could be started with method "start".
       // Custom callbacks:
       onChunk: function(chunk, detail){}, // Default is to trigger JS event "longpolling-chunk"
       onProgress: function(detail){}, // Default is to trigger JS event "longpolling-progress"
