@@ -17,7 +17,7 @@ Javascript class, working as ajax connector to server, allowing to receive "chun
 
 ## Options:
 ``` javascript
-    var ans = new AjaxNeverendingStreaming('get.php', document.getElementById('results1'), {
+    var ans = new AjaxNeverendingStreaming('get.php', {
       // These are the default values:
       maxTurns: 1,
       tag: 'chunk', // tag in php response.
