@@ -35,6 +35,9 @@
     that._onChunk = function(chunk, detail) {
       that._event('longpolling-chunk', detail);
     };
+    that._onProgress = function(detail) {
+      that._event('longpolling-progress', detail);
+    };
     that._onSuccess = function(detail) {
       that._event('longpolling-success', detail);
     };
@@ -110,6 +113,7 @@
     },
 
     this._processWhatCome = function(allMessages) {
+      var received = 0;
       do {
         var unprocessed = allMessages.substring(that.nextReadPos);
         var messageXMLEndIndex = unprocessed.indexOf(that.endTag);
@@ -132,12 +136,20 @@
           if (that._request_state == 1) {
             that._request_state = 2;
           };
+          received++;
           // with valid chunk, do the custom function:
           that._onChunk(theChunk, detail);
           // move the position after processed tag:
           that.nextReadPos += endOfFirstMessageIndex;
         }
       } while (messageXMLEndIndex != -1);
+      var detail = {
+        turn: (this._turn),
+        chunks: (this._chunk),
+        received: received,
+        time: this._getSpentTime()
+      };
+      that._onProgress(detail);
       if (that._request_state == 3) {
         that._request_state = 4;
       }
@@ -284,6 +296,9 @@
         }
         if (typeof options.onRequest == 'function') {
           this._onRequest = options.onRequest;
+        }
+        if (typeof options.onProgress == 'function') {
+          this._onProgress = options.onProgress;
         }
         if (typeof options.onChunk == 'function') {
           this._onChunk = options.onChunk;
