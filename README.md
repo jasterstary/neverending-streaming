@@ -26,6 +26,7 @@ Options:
       stopped: false, // if true, class is initially stopped. Could be started with method "resume".
       // Custom callbacks:
       onChunk: function(chunk, detail){}, // Default is to trigger jquery event "longpolling-chunk"
+      onProgress: function(detail){}, // Default is to trigger jquery event "longpolling-progress"
       onRequest: function(detail){}, // Default is to trigger jquery event "longpolling-request"
       onComplete: function(detail){}, // Default is to trigger jquery event "longpolling-complete"
       onError: function(detail){}, // Default is to trigger jquery event "longpolling-error"
