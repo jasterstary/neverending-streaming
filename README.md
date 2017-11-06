@@ -57,14 +57,14 @@ ans.destroy(); // free instance
 ## Events / Custom event functions:
 Events are described also in options section. Events are JS events, not the jQuery variant. Please note, that when custom event function is assigned, event is not called anymore, as you can do better events!
 
-### JS event "longpolling-chunk" / onChunk: 
+### JS event "longpolling-chunk" / onChunk function: 
 Called each time the chunk is received. There are two variables passed to function: chunk and detail, object with some details about:
 + turn: count of requests called so far,
 + chunks: count of chunks received so far in this request,
 + time: time passed from the beginning of request
 + data: chunk itself
       
-### JS event "longpolling-progress" / onProgress:
+### JS event "longpolling-progress" / onProgress function:
 Called in interval, specified in options parameter "interval", if chunks are received or not.
 There is only one parameter passed: detail, object with details:
 + turn: count of requests called so far,
@@ -72,13 +72,13 @@ There is only one parameter passed: detail, object with details:
 + received: count of chunks processed through this "progress",
 + time: time passed from the beginning of request
 
-### JS event "longpolling-request" / onRequest:
+### JS event "longpolling-request" / onRequest function:
 Called before the request to server is sent.
 There is only one parameter passed: detail, object with details:
 + turn: count of requests called so far,
 + url: url of this request
 
-### JS event "longpolling-complete" / onComplete:
+### JS event "longpolling-complete" / onComplete function:
 Called when server completed response and all resting chunks was processed.
 There is only one parameter passed: detail, object with details:
 + turn: count of requests called so far,
@@ -87,7 +87,7 @@ There is only one parameter passed: detail, object with details:
 + chunks: count of chunks received totally in this request,
 + time: time passed from the beginning of request      
 
-### JS event "longpolling-error" / onError
+### JS event "longpolling-error" / onError function:
 Called when server completed response and result was error.
 There is only one parameter passed: detail, object with details:
 + turn: count of requests called so far,
@@ -96,7 +96,7 @@ There is only one parameter passed: detail, object with details:
 + chunks: count of chunks received totally in this request,
 + time: time passed from the beginning of request 
 
-### JS event "longpolling-abort" / onAbort
+### JS event "longpolling-abort" / onAbort function:
 Called when request was aborted by user.
 There is only one parameter passed: detail, object with details:
 + turn: count of requests called so far,
@@ -105,7 +105,7 @@ There is only one parameter passed: detail, object with details:
 + chunks: count of chunks received totally in this request,
 + time: time passed from the beginning of request 
 
-### JS event "longpolling-success" / onSuccess
+### JS event "longpolling-success" / onSuccess function:
 Called when server completed response and result was success with status 200.
 There is only one parameter passed: detail, object with details:
 + turn: count of requests called so far,
@@ -114,8 +114,8 @@ There is only one parameter passed: detail, object with details:
 + chunks: count of chunks received totally in this request,
 + time: time passed from the beginning of request 
 
-### JS event "longpolling-all-done" / onAllDone
+### JS event "longpolling-all-done" / onAllDone function:
 Called when "maxTurns" requests was reached and completed.
-There is only one parameter passed: detail, object with details.
+There is only one parameter passed: detail, object with details:
 + turn: count of requests called so far
 
