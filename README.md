@@ -25,14 +25,14 @@ Options:
       useJSON: false, // server sends JSON chunks wrapped to xml tag.
       stopped: false, // if true, class is initially stopped. Could be started with method "resume".
       // Custom callbacks:
-      onChunk: function(chunk, detail){}, // Default is to trigger jquery event "longpolling-chunk"
-      onProgress: function(detail){}, // Default is to trigger jquery event "longpolling-progress"
-      onRequest: function(detail){}, // Default is to trigger jquery event "longpolling-request"
-      onComplete: function(detail){}, // Default is to trigger jquery event "longpolling-complete"
-      onError: function(detail){}, // Default is to trigger jquery event "longpolling-error"
-      onAbort: function(detail){}, // Default is to trigger jquery event "longpolling-abort"
-      onSuccess: function(detail){}, // Default is to trigger jquery event "longpolling-success"
-      onAllDone: function(detail){} // Default is to trigger jquery event "longpolling-all-done"      
+      onChunk: function(chunk, detail){}, // Default is to trigger JS event "longpolling-chunk"
+      onProgress: function(detail){}, // Default is to trigger JS event "longpolling-progress"
+      onRequest: function(detail){}, // Default is to trigger JS event "longpolling-request"
+      onComplete: function(detail){}, // Default is to trigger JS event "longpolling-complete"
+      onError: function(detail){}, // Default is to trigger JS event "longpolling-error"
+      onAbort: function(detail){}, // Default is to trigger JS event "longpolling-abort"
+      onSuccess: function(detail){}, // Default is to trigger JS event "longpolling-success"
+      onAllDone: function(detail){} // Default is to trigger JS event "longpolling-all-done"      
     });
 ```
 
@@ -48,3 +48,39 @@ Methods:
     });
 ans.destroy(); // free instance
 ```
+
+Events / Custom event functions:
+Events are described also in options section. Please note, that when custom event function is assigned, event is not called anymore.
+
+JS event "longpolling-chunk" / onChunk: 
+Called each time the chunk is received. There are two variables passed to function: chunk and detail, object with some details about.
+
+JS event "longpolling-progress" / onProgress:
+Called in interval, specified in options parameter "interval", if chunks are received or not.
+There is only one parameter passed: detail, object with details.
+
+JS event "longpolling-request" / onRequest:
+Called before the request to server is sent.
+There is only one parameter passed: detail, object with details.
+
+JS event "longpolling-complete" / onComplete:
+Called when server completed response and all resting chunks was processed.
+There is only one parameter passed: detail, object with details.
+
+JS event "longpolling-error" / onError
+Called when server completed response and result was error.
+There is only one parameter passed: detail, object with details.
+
+JS event "longpolling-abort" / onAbort
+Called when request was aborted by user.
+There is only one parameter passed: detail, object with details.
+
+JS event "longpolling-success" / onSuccess
+Called when server completed response and result was success: 200.
+There is only one parameter passed: detail, object with details.
+
+JS event "longpolling-all-done" / onAllDone
+Called when "maxTurns" requests was reached and completed.
+There is only one parameter passed: detail, object with details.
+
+
