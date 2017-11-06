@@ -101,7 +101,7 @@ There is only one parameter passed: detail, object with details:
 + time: time passed from the beginning of request 
 
 ### JS event "longpolling-success" / onSuccess
-Called when server completed response and result was success: 200.
+Called when server completed response and result was success with status 200.
 There is only one parameter passed: detail, object with details:
 + turn: count of requests called so far,
 + status
