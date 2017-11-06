@@ -50,7 +50,7 @@ ans.destroy(); // free instance
 ```
 
 ## Events / Custom event functions:
-Events are described also in options section. Please note, that when custom event function is assigned, event is not called anymore.
+Events are described also in options section. Events are JS events, not the jQuery variant. Please note, that when custom event function is assigned, event is not called anymore, as you can do better events!
 
 ### JS event "longpolling-chunk" / onChunk: 
 Called each time the chunk is received. There are two variables passed to function: chunk and detail, object with some details about:
