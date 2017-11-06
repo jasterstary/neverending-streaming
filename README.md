@@ -1,6 +1,6 @@
 # neverending-streaming
 
-Javascript class, working as ajax connector to server, allowing to receive "chunks" - blocks of complete information, which could be used in the browser application, altough the server response is still not complete and request is opened. An alternative is to use websockets, but sometimes websockets are not the option.
+Javascript class, working as ajax connector to server, allowing to receive "chunks" - blocks of complete information, which could be immediatelly used in the browser application, altough the server response is still not complete and request is opened. An alternative is to use websockets, but sometimes websockets are not the option.
 
 It is assumed also properly prepared server side. Simple PHP example is [here](https://github.com/jasterstary/neverending-streaming/blob/master/example/get.php). Perl example [here](https://github.com/jasterstary/neverending-streaming/blob/master/example/perl.cgi). 
 
