@@ -1,6 +1,6 @@
 # neverending-streaming
 
-Javascript class, working as ajax connector to server, allowing to receive "chunks" - blocks of complete information, which could be passed to the browser application, altough the server response is still not complete and request is opened. It assumes also properly prepared server side. Simple PHP example is in [examples](https://www.google.com)
+Javascript class, working as ajax connector to server, allowing to receive "chunks" - blocks of complete information, which could be passed to the browser application, altough the server response is still not complete and request is opened. It assumes also properly prepared server side. Simple PHP example is [here](https://github.com/jasterstary/neverending-streaming/blob/master/example/get.php)
 
 ## Usage:
 ``` html
